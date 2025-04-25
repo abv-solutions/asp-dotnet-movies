@@ -1,11 +1,10 @@
 ﻿@model List<MovieViewModel>
 
-<h1>@ViewData["Title"]</h1>
+@{
+    ViewData["Title"] = "Now Playing Movies";
+}
 
-<form asp-action="Search" asp-controller="Movies" method="get" class="mb-4">
-    <input type="text" name="query" placeholder="Enter TMDB query string" class="form-control" />
-    <button type="submit" class="btn btn-primary mt-2">Search</button>
-</form>
+<h1>@ViewData["Title"]</h1>
 
 <div class="movie-list">
     @foreach (var movie in Model)

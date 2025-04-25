@@ -1,0 +1,49 @@
+﻿@model List<MovieApp.Models.Comment>
+
+<div class="comments-section mt-3">
+    <h2>Comments</h2>
+    @if (Model != null && Model.Any())
+    {
+        foreach (var comment in Model)
+        {
+            <div class="comment-item">
+                <p>@comment.Text</p>
+                <small>
+                    Posted on @comment.CreatedAt.ToLocalTime().ToString("g")
+                </small>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No comments yet. Be the first to comment!</p>
+    }
+</div>
+
+<style>
+    .comments-section {
+        background-color: #f7f7f7;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .comment-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .comment-item:last-child {
+        border-bottom: none;
+    }
+
+    .comment-item p {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .comment-item small {
+        font-size: 12px;
+        color: #777;
+    }
+</style>

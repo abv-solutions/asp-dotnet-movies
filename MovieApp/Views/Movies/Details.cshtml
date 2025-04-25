@@ -1,0 +1,46 @@
+﻿@model MovieViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container my-4">
+    <div class="row">
+        <!-- Left Column: Movie Details -->
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h1>@Model.Title</h1>
+            <p><strong>Overview:</strong> @Model.Overview</p>
+            <p><strong>Rating:</strong> @Model.Score.ToString("F1")</p>
+            <p><strong>Vote Count:</strong> @Model.ScoreCount</p>
+            <p><strong>Budget:</strong> @Model.Budget $</p>
+            <p><strong>Genres:</strong> @string.Join(", ", Model.Genres.Select(e => e.Name))</p>
+            <a href="@Url.Action("Index", "Movies")" class="btn btn-primary mt-3">Back to Movies</a>
+        </div>
+
+        <!-- Right Column: Poster Image -->
+        <div class="col-md-6 text-center">
+            <img src="https://image.tmdb.org/t/p/w500/@Model.PosterPath" alt="@Model.Title Poster" class="img-fluid rounded" style="max-height:500px;" />
+        </div>
+    </div>
+</div>
+
+<hr />
+
+@if (User.Identity.IsAuthenticated)
+{
+        <form asp-action="Create" asp-controller="Comments" method="post">
+            <input type="hidden" name="movieId" value="@Model.Id" />
+            <div class="form-group">
+                <textarea name="text" class="form-control" rows="3" placeholder="Your comment here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Comment</button>
+        </form>
+}
+else
+{
+    <p>Please <a asp-area="Identity" asp-page="/Account/Login">log in</a> to post a comment.</p>
+}
+
+<div id="comments-section">
+    @await Html.PartialAsync("_Comments", Model.Comments) <!-- Assuming you've loaded comments into your MovieViewModel -->
+</div>
