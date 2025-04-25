@@ -6,7 +6,7 @@ namespace MovieApp.Services
     {
         Task<TmdbMovieList> GetLatestMoviesAsync();
         Task<TmdbMovieList> GetTopMoviesAsync();
-        Task<TmdbMovieList> SearchMoviesAsync(string query);
+        Task<TmdbMovieList> SearchMoviesAsync(string genreQuery, string query);
         Task<TmdbMovieDetails> GetMovieDetailsAsync(int movieId);
         Task<List<TmdbGenre>> GetGenresAsync();
     }

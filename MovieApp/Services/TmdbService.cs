@@ -47,10 +47,31 @@ namespace MovieApp.Services
             return JsonSerializer.Deserialize<TmdbMovieList>(response);
         }
 
-        public async Task<TmdbMovieList> SearchMoviesAsync(string query)
+        public async Task<TmdbMovieList> SearchMoviesAsync(string genreQuery, string query)
         {
-            var response = await GetApiResponseAsync($"/discover/movie?{query}&language=en-US&page=1");
-            return JsonSerializer.Deserialize<TmdbMovieList>(response);
+            var genreMovies = !string.IsNullOrEmpty(genreQuery)
+                ? JsonSerializer.Deserialize<TmdbMovieList>(await GetApiResponseAsync($"/discover/movie?with_genres={genreQuery}&language=en-US&page=1"))
+                : new TmdbMovieList { Results = new List<TmdbMovie>() };
+
+            var titleMovies = !string.IsNullOrEmpty(query)
+                ? JsonSerializer.Deserialize<TmdbMovieList>(await GetApiResponseAsync($"/search/movie?query={query}&language=en-US&page=1"))
+                : new TmdbMovieList { Results = new List<TmdbMovie>() };
+
+            // If both are provided, intersect the results
+            var searchedMovies = genreMovies.Results
+                .Where(genreMovie => titleMovies.Results.Any(titleMovie => titleMovie.Id == genreMovie.Id))
+                .ToList();
+
+            // If only one query is provided, return the appropriate results
+            if (string.IsNullOrEmpty(query)) searchedMovies = genreMovies.Results;
+            if (string.IsNullOrEmpty(genreQuery)) searchedMovies = titleMovies.Results;
+
+            return new TmdbMovieList
+            {
+                Results = searchedMovies,
+                TotalResults = searchedMovies.Count,
+                Page = 1
+            };
         }
 
         public async Task<TmdbMovieDetails> GetMovieDetailsAsync(int movieId)

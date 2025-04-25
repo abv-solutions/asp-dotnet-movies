@@ -3,7 +3,27 @@
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="Search" asp-controller="Movies" method="get" class="mb-4">
-    <input type="text" name="query" placeholder="Enter TMDB query string" class="form-control" />
+    <div class="container my-4">
+    <div class="mb-2" style="display: flex">
+        <h4>Search:</h4>
+        <input type="text" name="query" placeholder="Enter keywords" class="form-control mx-2" />
+    </div>
+    <h4>Select Genres:</h4>
+        @if (ViewData["Genres"] != null)
+        {
+            <div class="row justify-content-center">
+                @foreach (var genre in ViewData["Genres"] as List<TmdbGenre>)
+                {
+                    <div class="col-md-2 col-sm-3 mb-2">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="selectedGenres" value="@genre.Id" />
+                            <label class="form-check-label">@genre.Name</label>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
     <button type="submit" class="btn btn-primary mt-2">Search</button>
 </form>
 

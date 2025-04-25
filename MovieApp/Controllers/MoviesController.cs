@@ -17,17 +17,21 @@ namespace MovieApp.Controllers
             _commentRepository = commentRepository;
         }
 
-        public async Task<IActionResult> Index(string? query)
+        public async Task<IActionResult> Index(string? query, List<int>? selectedGenres)
         {
             TmdbMovieList movies;
-            if (string.IsNullOrWhiteSpace(query))
+            var genres = await _tmdbService.GetGenresAsync();
+            ViewData["Genres"] = genres;
+
+            if (string.IsNullOrWhiteSpace(query) && (selectedGenres == null || selectedGenres.Count == 0))
             {
                 movies = await _tmdbService.GetTopMoviesAsync();
                 ViewData["Title"] = "Top Rated Movies";
             }
             else
             {
-                movies = await _tmdbService.SearchMoviesAsync(query);
+                var genreQuery = string.Join(",", selectedGenres);
+                movies = await _tmdbService.SearchMoviesAsync(genreQuery, query);
                 ViewData["Title"] = "Search Results";
             }
             return MapMovieList(movies);
@@ -53,9 +57,9 @@ namespace MovieApp.Controllers
             return View(genres);
         }
 
-        public IActionResult Search(string query)
+        public IActionResult Search(string query, List<int> selectedGenres)
         {
-            return RedirectToAction("Index", new { query });
+            return RedirectToAction("Index", new { query, selectedGenres });
         }
 
         private ViewResult MapMovieList(TmdbMovieList movies)
