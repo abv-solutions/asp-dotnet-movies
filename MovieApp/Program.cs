@@ -15,7 +15,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddHttpClient<ITmdbService, TmdbService>();
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<ITmdbService, TmdbService>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();

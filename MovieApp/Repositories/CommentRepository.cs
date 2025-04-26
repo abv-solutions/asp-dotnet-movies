@@ -15,9 +15,16 @@ namespace MovieApp.Repositories
 
         public async Task<Comment> AddCommentAsync(Comment comment)
         {
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
-            return comment;
+            try
+            {
+                _context.Comments.Add(comment);
+                await _context.SaveChangesAsync();
+                return comment;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while adding the comment.", ex);
+            }
         }
 
         public async Task<List<Comment>> GetCommentsByMovieIdAsync(int movieId)
@@ -25,6 +32,7 @@ namespace MovieApp.Repositories
             return await _context.Comments
                 .Where(c => c.MovieId == movieId)
                 .OrderByDescending(c => c.CreatedAt)
+                .Take(100)
                 .ToListAsync();
         }
     }

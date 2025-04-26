@@ -6,24 +6,25 @@ using MovieApp.Repositories;
 
 namespace MovieApp.Controllers
 {
-    public class CommentsController : Controller
+    public class CommentsController(ICommentRepository repository) : Controller
     {
-        private readonly ICommentRepository _repository;
-
-        public CommentsController(ICommentRepository repository)
-        {
-            _repository = repository;
-        }
+        private readonly ICommentRepository _repository = repository;
 
         // POST: /Comments
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Create(int movieId, string text)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
                 TempData["Error"] = "Comment text cannot be empty.";
                 return RedirectToAction("Details", "Movies", new { id = movieId });
+            }
+
+            if (movieId <= 0)
+            {
+                TempData["Error"] = "Invalid movie.";
+                return RedirectToAction("Index", "Movies");
             }
 
             var comment = new Comment
@@ -36,7 +37,6 @@ namespace MovieApp.Controllers
 
             await _repository.AddCommentAsync(comment);
 
-            // Redirect back to the movie details page.
             return RedirectToAction("Details", "Movies", new { id = movieId });
         }
 
@@ -45,6 +45,11 @@ namespace MovieApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetComments(int movieId)
         {
+            if (movieId <= 0)
+            {
+                return BadRequest("Invalid movie ID.");
+            }
+
             var comments = await _repository.GetCommentsByMovieIdAsync(movieId);
             return PartialView("_Comments", comments);
         }

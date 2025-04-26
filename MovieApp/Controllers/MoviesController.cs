@@ -2,21 +2,15 @@
 using MovieApp.Services;
 using MovieApp.Models;
 using MovieApp.Repositories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MovieApp.Controllers
 {
-    public class MoviesController : Controller
+    public class MoviesController(ITmdbService tmdbService, ICommentRepository commentRepository) : Controller
     {
-        private readonly ITmdbService _tmdbService;
-        private readonly ICommentRepository _commentRepository;
+        private readonly ITmdbService _tmdbService = tmdbService;
+        private readonly ICommentRepository _commentRepository = commentRepository;
 
-        public MoviesController(ITmdbService tmdbService, ICommentRepository commentRepository)
-        {
-            _tmdbService = tmdbService;
-            _commentRepository = commentRepository;
-        }
-
+        [HttpGet]
         public async Task<IActionResult> Index(string? query, List<int>? selectedGenres)
         {
             TmdbMovieList movies;
@@ -30,47 +24,52 @@ namespace MovieApp.Controllers
             }
             else
             {
-                var genreQuery = string.Join(",", selectedGenres);
+                var genreQuery = BuildGenreQuery(selectedGenres);
                 movies = await _tmdbService.SearchMoviesAsync(genreQuery, query);
                 ViewData["Title"] = "Search Results";
             }
+
             return MapMovieList(movies);
         }
 
-        // Action to fetch and return now playing movies
+        [HttpGet]
         public async Task<IActionResult> Latest()
         {
             var movies = await _tmdbService.GetLatestMoviesAsync();
             return MapMovieList(movies);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var movieDetails = await _tmdbService.GetMovieDetailsAsync(id);
+            if (movieDetails == null)
+            {
+                return NotFound();
+            }
 
             var comments = await _commentRepository.GetCommentsByMovieIdAsync(id);
-
             var credits = await _tmdbService.GetMovieCreditsAsync(id);
-
             var images = await _tmdbService.GetMovieImagesAsync(id);
 
             return MapMovieDetails(movieDetails, comments, credits, images);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Genres()
         {
             var genres = await _tmdbService.GetGenresAsync();
             return View(genres);
         }
 
-        public IActionResult Search(string query, List<int> selectedGenres)
+        [HttpGet]
+        public IActionResult Search(string? query, List<int>? selectedGenres)
         {
-            return RedirectToAction("Index", new { query, selectedGenres });
+            return RedirectToAction(nameof(Index), new { query, selectedGenres });
         }
 
         private ViewResult MapMovieList(TmdbMovieList movies)
         {
-            // Convert TmdbMovieList to List<MovieViewModel>
             var movieListViewModel = movies.Results.Select(movie => new MovieViewModel
             {
                 Id = movie.Id,
@@ -85,7 +84,6 @@ namespace MovieApp.Controllers
 
         private ViewResult MapMovieDetails(TmdbMovieDetails movie, List<Comment> comments, TmdbMovieCredits credits, TmdbMovieImages images)
         {
-            // Convert TmdbMovie to MovieViewModel
             var movieViewModel = new MovieViewModel
             {
                 Id = movie.Id,
@@ -102,6 +100,11 @@ namespace MovieApp.Controllers
             };
 
             return View(movieViewModel);
+        }
+
+        private static string BuildGenreQuery(List<int>? selectedGenres)
+        {
+            return selectedGenres == null ? string.Empty : string.Join(",", selectedGenres);
         }
     }
 }
