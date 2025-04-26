@@ -47,8 +47,14 @@ namespace MovieApp.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var movieDetails = await _tmdbService.GetMovieDetailsAsync(id);
+
             var comments = await _commentRepository.GetCommentsByMovieIdAsync(id);
-            return MapMovieDetails(movieDetails, comments);
+
+            var credits = await _tmdbService.GetMovieCreditsAsync(id);
+
+            var images = await _tmdbService.GetMovieImagesAsync(id);
+
+            return MapMovieDetails(movieDetails, comments, credits, images);
         }
 
         public async Task<IActionResult> Genres()
@@ -77,7 +83,7 @@ namespace MovieApp.Controllers
             return View(movieListViewModel);
         }
 
-        private ViewResult MapMovieDetails(TmdbMovieDetails movie, List<Comment> comments)
+        private ViewResult MapMovieDetails(TmdbMovieDetails movie, List<Comment> comments, TmdbMovieCredits credits, TmdbMovieImages images)
         {
             // Convert TmdbMovie to MovieViewModel
             var movieViewModel = new MovieViewModel
@@ -90,7 +96,9 @@ namespace MovieApp.Controllers
                 Budget = movie.Budget,
                 PosterPath = movie.PosterPath,
                 Genres = movie.Genres,
-                Comments = comments
+                Comments = comments,
+                Cast = credits.Cast,
+                Images = images.Posters,
             };
 
             return View(movieViewModel);

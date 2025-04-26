@@ -11,6 +11,8 @@ namespace MovieApp.Models
         public string? PosterPath { get; set; }
         public List<TmdbGenre>? Genres { get; set; }
         public List<Comment> Comments { get; set; } = [];
+        public List<TmdbCastMember> Cast { get; set; } = [];
+        public List<TmdbImage> Images { get; set; } = [];
     }
 
 }

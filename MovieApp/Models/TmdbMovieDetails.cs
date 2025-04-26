@@ -28,4 +28,39 @@ namespace MovieApp.Models
         [JsonPropertyName("genres")]
         public required List<TmdbGenre> Genres { get; set; }
     }
+
+    public class TmdbCastMember
+    {
+        [JsonPropertyName("name")]
+        public required string Name { get; set; }
+
+        [JsonPropertyName("character")]
+        public required string Character { get; set; }
+
+        [JsonPropertyName("profile_path")]
+        public required string ProfilePath { get; set; }
+
+    }
+
+    public class TmdbMovieCredits
+    {
+        [JsonPropertyName("cast")]
+        public required List<TmdbCastMember> Cast { get; set; }
+    }
+
+    public class TmdbMovieImages
+    {
+        [JsonPropertyName("backdrops")]
+        public required List<TmdbImage> Backdrops { get; set; }
+
+        [JsonPropertyName("posters")]
+        public required List<TmdbImage> Posters { get; set; }
+    }
+
+    public class TmdbImage
+    {
+        [JsonPropertyName("file_path")]
+        public required string FilePath { get; set; }
+    }
+
 }

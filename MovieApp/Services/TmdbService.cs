@@ -86,5 +86,18 @@ namespace MovieApp.Services
             var genreList = JsonSerializer.Deserialize<TmdbGenreList>(response);
             return genreList?.Genres ?? [];
         }
+
+        public async Task<TmdbMovieCredits> GetMovieCreditsAsync(int movieId)
+        {
+            var response = await GetApiResponseAsync($"/movie/{movieId}/credits?language=en-US");
+            return JsonSerializer.Deserialize<TmdbMovieCredits>(response);
+        }
+
+        public async Task<TmdbMovieImages> GetMovieImagesAsync(int movieId)
+        {
+            var response = await GetApiResponseAsync($"/movie/{movieId}/images?include_image_language=en");
+            return JsonSerializer.Deserialize<TmdbMovieImages>(response);
+        }
+
     }
 }

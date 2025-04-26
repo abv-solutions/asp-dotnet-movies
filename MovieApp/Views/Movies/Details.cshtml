@@ -26,6 +26,50 @@
 
 <hr />
 
+<!-- Cast Section -->
+@if (Model.Cast != null && Model.Cast.Any())
+{
+        <div class="container my-4">
+            <h2>Cast</h2>
+            <div class="row">
+            @foreach (var cast in Model.Cast.Take(12))
+            {
+                        <div class="col-md-2 col-sm-3 text-center mb-3">
+                    @if (!string.IsNullOrEmpty(cast.ProfilePath))
+                    {
+                                    <img src="https://image.tmdb.org/t/p/w185/@cast.ProfilePath" alt="@cast.Name" class="img-thumbnail" style="max-height:150px;" />
+                    }
+                            <p class="mt-2">
+                                <strong>@cast.Name</strong><br />
+                                <small class="text-muted">@cast.Character</small>
+                            </p>
+                        </div>
+            }
+            </div>
+        </div>
+}
+
+<hr />
+
+<!-- Images Section -->
+@if (Model.Images != null && Model.Images.Any())
+{
+        <div class="container my-4">
+            <h2>Images</h2>
+            <div class="row">
+            @foreach (var image in Model.Images.Take(4))
+            {
+                        <div class="col-md-3 col-sm-4 mb-3">
+                            <img src="https://image.tmdb.org/t/p/w342/@image.FilePath" alt="Movie Image" class="img-fluid rounded" />
+                        </div>
+            }
+            </div>
+        </div>
+}
+
+<hr />
+
+<!-- Comment Section -->
 @if (User.Identity.IsAuthenticated)
 {
         <form asp-action="Create" asp-controller="Comments" method="post">
@@ -38,9 +82,9 @@
 }
 else
 {
-    <p>Please <a asp-area="Identity" asp-page="/Account/Login">log in</a> to post a comment.</p>
+        <p>Please <a asp-area="Identity" asp-page="/Account/Login">log in</a> to post a comment.</p>
 }
 
 <div id="comments-section">
-    @await Html.PartialAsync("_Comments", Model.Comments) <!-- Assuming you've loaded comments into your MovieViewModel -->
+    @await Html.PartialAsync("_Comments", Model.Comments)
 </div>
