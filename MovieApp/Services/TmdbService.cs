@@ -6,8 +6,8 @@ namespace MovieApp.Services
     public class TmdbService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : ITmdbService
     {
         private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
-        private readonly string? _apiKey = configuration["TmdbSettings:ApiKey"];
-        private readonly string? _bearerToken = configuration["TmdbSettings:BearerToken"];
+        private readonly string? _apiKey = Environment.GetEnvironmentVariable("API_KEY");
+        private readonly string? _bearerToken = Environment.GetEnvironmentVariable("BEARER_TOKEN");
         private const string ApiBaseUrl = "https://api.themoviedb.org/3";
         private const string DefaultLanguage = "en-US";
         private const int DefaultPage = 1;

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using MovieApp.Data;
 using MovieApp.Repositories;
 using MovieApp.Services;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
